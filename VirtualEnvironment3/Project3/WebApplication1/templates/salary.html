@@ -1,0 +1,59 @@
+{% load custom_tags %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Salary System</title>
+</head>
+<body>
+
+<h2>Smart Salary & Tax Breakdown</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    Basic Salary:
+    <input type="number" name="basic" step="0.01" required><br><br>
+
+    HRA %:
+    <input type="number" name="hra_percent" required><br><br>
+
+    Bonus:
+    <input type="number" name="bonus" required><br><br>
+
+    Allowance:
+    <input type="number" name="allowance" required><br><br>
+
+    PF %:
+    <input type="number" name="pf_percent" required><br><br>
+
+    Tax %:
+    <input type="number" name="tax_percent" required><br><br>
+
+    <button type="submit">Calculate</button>
+</form>
+
+{% if basic %}
+
+<hr>
+
+{% hra_amount basic hra_percent as hra %}
+{% gross_salary basic hra bonus allowance as gross %}
+{% pf_amount basic pf_percent as pf %}
+{% tax_amount gross tax_percent as tax %}
+{% total_deduction pf tax as deduction %}
+{% net_salary gross deduction as net %}
+
+<h3>Salary Breakdown</h3>
+
+<p>HRA Amount: ₹ {{ hra|floatformat:2 }}</p>
+<p>Gross Salary: ₹ {{ gross|floatformat:2 }}</p>
+<p>PF Deduction: ₹ {{ pf|floatformat:2 }}</p>
+<p>Tax Deduction: ₹ {{ tax|floatformat:2 }}</p>
+<p>Total Deduction: ₹ {{ deduction|floatformat:2 }}</p>
+<p><strong>Net Salary: ₹ {{ net|floatformat:2 }}</strong></p>
+
+{% endif %}
+
+</body>
+</html>
